@@ -1,0 +1,10 @@
+{
+  "name": "aaa",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "rmst-cli start"
+  },
+  "devDependencies": {
+    "rmst-cli": "1.1.29"
+  }
+}
