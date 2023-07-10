@@ -1,3 +1,4 @@
+import { lossFrame } from './utils'
 import Virtual from './virtual'
 
 export function sleep(ms: number) {
@@ -7,14 +8,33 @@ export function sleep(ms: number) {
 
 const container = document.querySelector('#root') as HTMLElement
 
-container.onscroll = () => {
+const loseFunc = lossFrame(container, realTarget => {
+  console.log('real realTarget', realTarget)
+  vins.handleScroll(realTarget)
+})
+
+// document.addEventListener('scroll', loseFunc, { capture: true })
+
+container.addEventListener(
+  'scroll',
+  evt => {
+    // vins.handleScroll(container.scrollTop)
+  },
+  {
+    capture: true
+  }
+)
+
+requestAnimationFrame(function up() {
   vins.handleScroll(container.scrollTop)
-}
+
+  requestAnimationFrame(up)
+})
 
 const wrapperDom = document.createElement('div')
 container.appendChild(wrapperDom)
 
-const dataSources = Array.from({ length: 1000 }, (_, idx) => ({ id: String(idx) }))
+const dataSources = Array.from({ length: 100 }, (_, idx) => ({ id: String(idx) }))
 
 const keeps = 12
 const estimateSize = 50
@@ -28,6 +48,7 @@ const getUniqueIdFromDataSources = () => {
 }
 
 const getRenderSlots = range => {
+  sleep(1000)
   const slots = []
   const { start, end } = range
 
@@ -56,7 +77,6 @@ const vins = new Virtual(
     uniqueIds: getUniqueIdFromDataSources()
   },
   range => {
-    sleep(100)
     wrapperDom.innerHTML = ''
 
     const nvDoms = getRenderSlots(range)
@@ -75,12 +95,15 @@ function createItem(uniqueKey) {
   var div = document.createElement('div')
   div.style.display = 'flex'
   div.style.alignItems = 'center'
+  div.setAttribute('index', uniqueKey)
 
   const dd = Array.from({ length: 10 }, () => {
     // 创建标题元素
     var title = document.createElement('h2')
     title.textContent = uniqueKey + ' 标题'
     title.style.color = 'blue'
+    title.style.width = '200px'
+    title.style.flexShrink = '0'
 
     // 创建副标题元素
     var subtitle = document.createElement('h3')
