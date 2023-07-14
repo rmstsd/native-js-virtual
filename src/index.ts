@@ -8,27 +8,20 @@ export function sleep(ms: number) {
 
 const container = document.querySelector('#root') as HTMLElement
 
-const loseFunc = lossFrame(container, realTarget => {
-  console.log('real realTarget', realTarget)
-  vins.handleScroll(realTarget)
+let down = false
+document.addEventListener('mousedown', evt => {
+  down = true
 })
 
-// document.addEventListener('scroll', loseFunc, { capture: true })
-
-container.addEventListener(
-  'scroll',
-  evt => {
-    // vins.handleScroll(container.scrollTop)
-  },
-  {
-    capture: true
+document.addEventListener('mousemove', evt => {
+  if (down) {
+    evt.preventDefault()
+    vins.handleScroll(evt.clientY)
+    container.scrollTop = evt.clientY
   }
-)
-
-requestAnimationFrame(function up() {
-  vins.handleScroll(container.scrollTop)
-
-  requestAnimationFrame(up)
+})
+document.addEventListener('mouseup', evt => {
+  down = false
 })
 
 const wrapperDom = document.createElement('div')
@@ -48,7 +41,8 @@ const getUniqueIdFromDataSources = () => {
 }
 
 const getRenderSlots = range => {
-  sleep(1000)
+  // sleep(1000)
+
   const slots = []
   const { start, end } = range
 
